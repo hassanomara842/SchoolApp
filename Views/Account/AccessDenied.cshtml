@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container mt-5 text-center">
+    <div class="card glass-card border-0 mx-auto mt-5 shadow-lg" style="max-width: 500px;">
+        <div class="card-body p-5">
+            <i class="fa-solid fa-shield-halved text-danger mb-4" style="font-size: 5rem; filter: drop-shadow(0 0 10px rgba(220, 53, 69, 0.5));"></i>
+            <h1 class="text-white mb-3">Access Denied</h1>
+            <p class="text-light opacity-75 mb-5 fs-5">Sorry, you do not have permission to view this page or perform this action.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary rounded-pill px-5 py-2 fw-bold">
+                <i class="fa-solid fa-house me-2"></i> Return to Home
+            </a>
+        </div>
+    </div>
+</div>

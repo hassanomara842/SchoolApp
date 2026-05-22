@@ -1,0 +1,300 @@
+@model SchoolApp.Models.CreateQuizViewModel
+@{
+    ViewData["Title"] = "Create Quiz";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="card bg-dark text-white glass-panel border-0 rounded-4 shadow-lg overflow-hidden">
+        <div class="card-header text-white p-4 border-0" style="background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
+            <h3 class="mb-0 fw-bold"><i class="fa-solid fa-wand-magic-sparkles me-2"></i> @Localizer["Quiz Wizard"]</h3>
+            <p class="mb-0 text-white-50 mt-1">@Localizer["Design your online exam seamlessly."]</p>
+        </div>
+        <div class="card-body p-5">
+            <form id="quizForm">
+                <div class="row g-4 mb-5 pb-4 border-bottom border-secondary">
+                    <div class="col-md-5">
+                        <label class="form-label text-info fw-bold">@Localizer["Quiz Title"]</label>
+                        <input type="text" id="quizTitle" class="form-control bg-dark text-light border-secondary shadow-none" placeholder="e.g. Midterm Exam" required />
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label text-info fw-bold">@Localizer["Course"]</label>
+                        <select id="courseId" class="form-select bg-dark text-light border-secondary shadow-none" asp-items="ViewBag.Courses" required>
+                            <option value="">@Localizer["Select Course..."]</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-info fw-bold">@Localizer["Duration (Mins)"]</label>
+                        <input type="number" id="duration" class="form-control bg-dark text-light border-secondary shadow-none" value="30" min="1" required />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="text-light fw-bold m-0">@Localizer["Questions"]</h4>
+                    <div>
+                        <button type="button" class="btn btn-outline-warning rounded-pill px-4 me-2" id="generateAiBtn">
+                            <i class="fa-solid fa-robot me-1"></i> @Localizer["Generate with AI"]
+                        </button>
+                        <button type="button" class="btn btn-outline-info rounded-pill px-4" id="addQuestionBtn">
+                            <i class="fa-solid fa-plus me-1"></i> @Localizer["Add Question"]
+                        </button>
+                    </div>
+                </div>
+
+                <div id="questionsContainer">
+                    <!-- Questions will be added here -->
+                </div>
+
+                <div class="text-end mt-5 pt-3 border-top border-secondary">
+                    <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill fw-bold shadow-sm hover-scale" id="saveQuizBtn">
+                        <i class="fa-solid fa-floppy-disk me-2"></i> @Localizer["Save Quiz"]
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let questionCount = 0;
+
+        function renderQuestion() {
+            let qId = questionCount++;
+            let html = `
+                <div class="card bg-dark border-secondary mb-4 question-block rounded-4 shadow-sm" data-qid="${qId}">
+                    <div class="card-header border-secondary p-3 d-flex justify-content-between align-items-center" style="background-color: rgba(255,255,255,0.02);">
+                        <h5 class="mb-0 text-info fw-bold"><i class="fa-solid fa-circle-question me-2"></i>Question ${qId + 1}</h5>
+                        <button type="button" class="btn btn-sm btn-outline-danger rounded-circle remove-question" style="width: 32px; height: 32px; padding: 0;"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-10">
+                                <input type="text" class="form-control bg-dark text-light border-secondary shadow-none q-text" placeholder="Enter question text here..." required />
+                            </div>
+                            <div class="col-md-2">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-secondary text-light border-secondary border-end-0">Pts</span>
+                                    <input type="number" class="form-control bg-dark text-light border-secondary shadow-none q-points border-start-0" value="1" min="1" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="options-container ps-4 border-start border-2 border-primary mb-3">
+                            <!-- Options go here -->
+                        </div>
+                        <div class="ps-4">
+                            <button type="button" class="btn btn-sm btn-outline-secondary text-light rounded-pill add-option">
+                                <i class="fa-solid fa-plus me-1"></i> Add Option
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $('#questionsContainer').append(html);
+            // Add two default options
+            addOption($(`.question-block[data-qid='${qId}']`));
+            addOption($(`.question-block[data-qid='${qId}']`));
+        }
+
+        function addOption(questionBlock, defaultText = '', isCorrect = false) {
+            let optionsContainer = questionBlock.find('.options-container');
+            let qId = questionBlock.data('qid');
+            let html = `
+                <div class="d-flex align-items-center mb-3 option-row">
+                    <div class="form-check me-3 mb-0">
+                        <input class="form-check-input o-correct fs-5 border-secondary bg-dark" type="radio" name="correct_${qId}" ${isCorrect ? 'checked' : ''} required>
+                    </div>
+                    <input type="text" class="form-control form-control-sm bg-dark text-light border-secondary shadow-none me-3 o-text p-2" placeholder="Option text..." value="${defaultText}" required />
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-circle remove-option" style="width: 28px; height: 28px; padding: 0;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            `;
+            optionsContainer.append(html);
+        }
+
+        $(document).ready(function () {
+            // AI Generate Logic
+            $('#generateAiBtn').click(function () {
+                let courseOptions = $('#courseId').html();
+                Swal.fire({
+                    title: 'Generate Questions with AI 🤖',
+                    html: `
+                        <select id="aiTopic" class="swal2-select" style="display: flex; width: 80%; margin: 1em auto;">
+                            ${courseOptions}
+                        </select>
+                        <input id="aiCount" type="number" class="swal2-input" placeholder="Number of questions (e.g. 5)" min="1" max="15">
+                    `,
+                    focusConfirm: false,
+                    showCancelButton: true,
+                    confirmButtonText: 'Generate',
+                    preConfirm: () => {
+                        let selectEl = document.getElementById('aiTopic');
+                        let topicName = selectEl.options[selectEl.selectedIndex].text;
+                        if (!selectEl.value) topicName = ""; // if "Select Course..." is chosen
+
+                        return {
+                            Topic: topicName,
+                            Count: parseInt(document.getElementById('aiCount').value)
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (!result.value.Topic || !result.value.Count) {
+                            Swal.fire('Error', 'Please provide a topic and count', 'error');
+                            return;
+                        }
+
+                        Swal.fire({
+                            title: 'Generating...',
+                            html: 'Our AI is crafting your questions. Please wait.',
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+
+                        $.ajax({
+                            url: '/Quiz/GenerateAiQuestions',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(result.value),
+                            success: function (res) {
+                                if (res.success) {
+                                    Swal.close();
+                                    // Inject questions
+                                    res.questions.forEach(q => {
+                                        let qId = questionCount++;
+                                        let html = `
+                                            <div class="card bg-dark border-secondary mb-4 question-block rounded-4 shadow-sm" data-qid="${qId}">
+                                                <div class="card-header border-secondary p-3 d-flex justify-content-between align-items-center" style="background-color: rgba(255,255,255,0.02);">
+                                                    <h5 class="mb-0 text-info fw-bold"><i class="fa-solid fa-robot me-2 text-warning"></i>Question ${qId + 1} (AI)</h5>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-circle remove-question" style="width: 32px; height: 32px; padding: 0;"><i class="fa-solid fa-trash"></i></button>
+                                                </div>
+                                                <div class="card-body p-4">
+                                                    <div class="row g-3 mb-4">
+                                                        <div class="col-md-10">
+                                                            <input type="text" class="form-control bg-dark text-light border-secondary shadow-none q-text" placeholder="Enter question text here..." value="${q.text}" required />
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="input-group">
+                                                                <span class="input-group-text bg-secondary text-light border-secondary border-end-0">Pts</span>
+                                                                <input type="number" class="form-control bg-dark text-light border-secondary shadow-none q-points border-start-0" value="${q.points}" min="1" required />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="options-container ps-4 border-start border-2 border-primary mb-3">
+                                                    </div>
+                                                    <div class="ps-4">
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary text-light rounded-pill add-option">
+                                                            <i class="fa-solid fa-plus me-1"></i> Add Option
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                        $('#questionsContainer').append(html);
+                                        let newBlock = $(`.question-block[data-qid='${qId}']`);
+                                        q.options.forEach(o => {
+                                            addOption(newBlock, o.text, o.isCorrect);
+                                        });
+                                    });
+                                    
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success!',
+                                        text: `${res.questions.length} questions added!`,
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                } else {
+                                    Swal.fire('Error', res.message || 'Failed to generate questions.', 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Error', 'Network or server error occurred.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Initial question
+            renderQuestion();
+
+            $('#addQuestionBtn').click(function () {
+                renderQuestion();
+            });
+
+            $(document).on('click', '.add-option', function () {
+                addOption($(this).closest('.question-block'));
+            });
+
+            $(document).on('click', '.remove-question', function () {
+                $(this).closest('.question-block').remove();
+            });
+
+            $(document).on('click', '.remove-option', function () {
+                $(this).closest('.option-row').remove();
+            });
+
+            $('#quizForm').submit(function (e) {
+                e.preventDefault();
+
+                let quizData = {
+                    Title: $('#quizTitle').val(),
+                    CourseId: parseInt($('#courseId').val()),
+                    DurationMinutes: parseInt($('#duration').val()),
+                    Questions: []
+                };
+
+                $('.question-block').each(function () {
+                    let qBlock = $(this);
+                    let question = {
+                        Text: qBlock.find('.q-text').val(),
+                        Points: parseInt(qBlock.find('.q-points').val()),
+                        Options: []
+                    };
+
+                    qBlock.find('.option-row').each(function () {
+                        let oRow = $(this);
+                        question.Options.push({
+                            Text: oRow.find('.o-text').val(),
+                            IsCorrect: oRow.find('.o-correct').is(':checked')
+                        });
+                    });
+                    
+                    quizData.Questions.push(question);
+                });
+
+                // Validation check (ensure at least 1 correct option per question)
+                let isValid = true;
+                quizData.Questions.forEach((q, i) => {
+                    if (q.Options.filter(o => o.IsCorrect).length === 0) {
+                        Swal.fire('Error', `Question ${i + 1} must have a correct option selected.`, 'error');
+                        isValid = false;
+                    }
+                });
+
+                if (!isValid) return;
+
+                $.ajax({
+                    url: '/Quiz/Create',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(quizData),
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Saved!',
+                                text: 'Quiz created successfully.',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.href = '/Quiz/Index';
+                            });
+                        } else {
+                            Swal.fire('Error', 'Failed to save quiz.', 'error');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

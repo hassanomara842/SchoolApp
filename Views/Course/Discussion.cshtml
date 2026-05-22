@@ -1,0 +1,116 @@
+@model IEnumerable<SchoolApp.Models.ChatMessage>
+@{
+    ViewData["Title"] = "Course Discussion";
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-info fw-bold mb-0">
+            <i class="fa-solid fa-comments me-2"></i> @ViewBag.CourseName Discussion
+        </h2>
+        <a asp-action="Index" class="btn btn-outline-light rounded-pill px-4">Back to Courses</a>
+    </div>
+
+    <div class="card glass-panel border-0 rounded-4 shadow-lg overflow-hidden d-flex flex-column" style="height: 600px;">
+        <!-- Chat Messages Area -->
+        <div class="card-body p-4 overflow-auto d-flex flex-column gap-3 flex-grow-1" id="chatArea" style="background: rgba(15, 23, 42, 0.4);">
+            @foreach (var msg in Model)
+            {
+                bool isMine = msg.UserId == currentUserId;
+                <div class="d-flex w-100 @(isMine ? "justify-content-end" : "justify-content-start")">
+                    <div class="d-flex flex-column @(isMine ? "align-items-end" : "align-items-start")" style="max-width: 75%;">
+                        <div class="d-flex align-items-end gap-2 mb-1 @(isMine ? "flex-row-reverse" : "flex-row")">
+                            <img src="@(msg.User?.ProfilePicturePath ?? "/images/default-profile.png")" class="rounded-circle object-fit-cover" width="30" height="30" />
+                            <span class="small text-muted fw-bold">@(msg.User?.FullName ?? "Unknown")</span>
+                            <span class="small text-muted" style="font-size: 0.75rem;">@msg.CreatedAt.ToString("HH:mm")</span>
+                        </div>
+                        <div class="p-3 rounded-4 shadow-sm @(isMine ? "bg-primary text-white" : "bg-white text-dark")" style="border-top-right-radius: @(isMine ? "0" : "1rem") !important; border-top-left-radius: @(isMine ? "1rem" : "0") !important;">
+                            @msg.Message
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Chat Input Area -->
+        <div class="card-footer bg-transparent border-top border-secondary border-opacity-25 p-3">
+            <form id="chatForm" class="d-flex gap-2">
+                <input type="hidden" id="courseId" value="@ViewBag.CourseId" />
+                <input type="text" id="messageInput" class="form-control rounded-pill bg-dark text-white border-secondary px-4 py-2" placeholder="Type your message here..." autocomplete="off" required />
+                <button type="submit" class="btn btn-primary rounded-pill px-4"><i class="fa-solid fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const courseId = document.getElementById("courseId").value;
+            const chatArea = document.getElementById("chatArea");
+            const chatForm = document.getElementById("chatForm");
+            const messageInput = document.getElementById("messageInput");
+
+            // Scroll to bottom initially
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .build();
+
+            connection.on("ReceiveMessage", function (userName, profilePic, message, time) {
+                // Determine if it's mine (hacky way: we can check the stored user name in a hidden field, but for UI sake, it's pushed right away if we send it)
+                // For simplicity, we just render incoming messages as "others" unless we handle our own echo.
+                const currentUserName = "@(User.Identity?.Name)"; // Or FullName
+                const isMine = false; // By default from server. Better approach: server sends userId and we compare. Let's just render it left for now for simplicity, or handle optimistic UI.
+                
+                // Let's implement optimistic UI instead to avoid echo logic complexity in view.
+            });
+
+            connection.start().then(function () {
+                connection.invoke("JoinCourseGroup", courseId).catch(function (err) {
+                    return console.error(err.toString());
+                });
+            }).catch(function (err) {
+                return console.error(err.toString());
+            });
+
+            // Optimistic UI approach
+            const currentUserId = "@currentUserId";
+            
+            connection.on("ReceiveMessage", function (userName, profilePic, message, time) {
+                const msgHtml = `
+                    <div class="d-flex w-100 justify-content-start">
+                        <div class="d-flex flex-column align-items-start" style="max-width: 75%;">
+                            <div class="d-flex align-items-end gap-2 mb-1 flex-row">
+                                <img src="${profilePic || '/images/default-profile.png'}" class="rounded-circle object-fit-cover" width="30" height="30" />
+                                <span class="small text-muted fw-bold">${userName}</span>
+                                <span class="small text-muted" style="font-size: 0.75rem;">${time}</span>
+                            </div>
+                            <div class="p-3 rounded-4 shadow-sm bg-white text-dark" style="border-top-right-radius: 1rem !important; border-top-left-radius: 0 !important;">
+                                ${message}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatArea.insertAdjacentHTML('beforeend', msgHtml);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            });
+
+            chatForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+                const msg = messageInput.value;
+                if (!msg) return;
+
+                // Send to server
+                connection.invoke("SendMessage", courseId, msg).catch(function (err) {
+                    return console.error(err.toString());
+                });
+
+                messageInput.value = "";
+            });
+        });
+    </script>
+}

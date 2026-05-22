@@ -1,0 +1,111 @@
+@model SchoolApp.Models.Course
+
+@{
+    ViewData["Title"] = "Create Course";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1 class="display-5 fw-bold mb-0">Add New Course</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="glass-card p-4">
+            <form asp-action="Create" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold"></label>
+                    <input asp-for="Name" class="form-control bg-transparent text-white border-secondary" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Degree" class="form-label fw-bold"></label>
+                        <input asp-for="Degree" class="form-control bg-transparent text-white border-secondary" type="number" />
+                        <span asp-validation-for="Degree" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="MinDegree" class="form-label fw-bold"></label>
+                        <input asp-for="MinDegree" class="form-control bg-transparent text-white border-secondary" type="number" />
+                        <span asp-validation-for="MinDegree" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="Hrs" class="form-label fw-bold"></label>
+                        <input asp-for="Hrs" class="form-control bg-transparent text-white border-secondary" type="number" />
+                        <span asp-validation-for="Hrs" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Dept_id" class="form-label fw-bold">Department</label>
+                        <select asp-for="Dept_id" class="form-select bg-dark text-white border-secondary" asp-items="ViewBag.Dept_id">
+                            <option value="">-- Select Department --</option>
+                        </select>
+                        <span asp-validation-for="Dept_id" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Price" class="form-label fw-bold">Original Price ($)</label>
+                        <input asp-for="Price" class="form-control bg-transparent text-white border-secondary" type="number" step="0.01" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <hr class="border-secondary my-4" />
+                <h4 class="text-info mb-3"><i class="fa-solid fa-fire me-2"></i> Special Offer Details (Optional)</h4>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold">Offer Subtitle / Description</label>
+                    <input asp-for="Description" class="form-control bg-transparent text-white border-secondary" placeholder="e.g. Master React, C#, and SQL Server in 12 weeks." />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DiscountPrice" class="form-label fw-bold text-success">Discounted Price ($)</label>
+                        <input asp-for="DiscountPrice" class="form-control bg-transparent text-white border-secondary" type="number" step="0.01" />
+                        <span asp-validation-for="DiscountPrice" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="BadgeText" class="form-label fw-bold">Badge Text</label>
+                        <input asp-for="BadgeText" class="form-control bg-transparent text-white border-secondary" placeholder="e.g. -50% OFF" />
+                        <span asp-validation-for="BadgeText" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label asp-for="BadgeColor" class="form-label fw-bold">Badge Color</label>
+                        <select asp-for="BadgeColor" class="form-select bg-dark text-white border-secondary">
+                            <option value="danger">Red</option>
+                            <option value="warning text-dark">Yellow</option>
+                            <option value="info">Blue</option>
+                            <option value="success">Green</option>
+                            <option value="primary">Purple</option>
+                        </select>
+                        <span asp-validation-for="BadgeColor" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ImageUrl" class="form-label fw-bold">Image URL (Or Upload Below)</label>
+                    <input asp-for="ImageUrl" class="form-control bg-transparent text-white border-secondary" />
+                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label for="imageFile" class="form-label fw-bold text-muted"><i class="fa-regular fa-image me-1"></i> Upload Cover Image (Overrides URL)</label>
+                    <input type="file" name="imageFile" id="imageFile" class="form-control bg-dark text-light border-secondary" accept="image/*" />
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-light px-4">Back to List</a>
+                    <button type="submit" class="btn btn-premium px-5"><i class="fa-solid fa-plus"></i> Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

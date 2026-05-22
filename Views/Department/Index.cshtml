@@ -1,0 +1,36 @@
+@model IEnumerable<SchoolApp.Models.Department>
+
+@{
+    ViewData["Title"] = "Departments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1 class="display-5 fw-bold mb-0">Departments</h1>
+    <a asp-action="Create" class="btn btn-premium"><i class="fa-solid fa-plus me-2"></i>Add Department</a>
+</div>
+
+<div class="glass-card p-4">
+    <table class="table text-white border-secondary mb-0 table-datatable">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Name)</th>
+                <th>@Html.DisplayNameFor(model => model.Manager)</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model) {
+                <tr>
+                    <td class="align-middle fw-bold">@item.Name</td>
+                    <td class="align-middle">@item.Manager</td>
+                    <td class="text-end">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-light me-1"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline">
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(this.form)"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

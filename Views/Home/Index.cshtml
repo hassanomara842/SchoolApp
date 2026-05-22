@@ -1,0 +1,25 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- Hero Section -->
+<div class="row align-items-center mb-5 mt-4">
+    <div class="col-lg-6 mb-4 mb-lg-0">
+        <h1 class="display-4 fw-bold mb-3" style="background: -webkit-linear-gradient(45deg, #00d2ff 0%, #3a7bd5 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+            Unlock Your Potential with Our Premium Courses
+        </h1>
+        <p class="lead text-light opacity-75 mb-4">
+            Join thousands of students and professional instructors in a modern learning environment. Explore our exclusive offers below!
+        </p>
+        <a asp-controller="Course" asp-action="Index" class="btn btn-premium btn-lg px-5 shadow-lg rounded-pill">
+            <i class="fa-solid fa-rocket me-2"></i> Browse Courses
+        </a>
+    </div>
+    <div class="col-lg-6 text-center">
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Learning" class="img-fluid rounded-4 shadow-lg" style="border: 2px solid rgba(255,255,255,0.1); transform: perspective(1000px) rotateY(-10deg); transition: transform 0.5s;" onmouseover="this.style.transform='perspective(1000px) rotateY(0deg)'" onmouseout="this.style.transform='perspective(1000px) rotateY(-10deg)'">
+    </div>
+</div>
+
+@await Html.PartialAsync("_AnnouncementsCarousel")
+
+@await Html.PartialAsync("_SpecialOffers")

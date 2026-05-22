@@ -1,0 +1,149 @@
+@model SchoolApp.Models.TakeQuizViewModel
+@{
+    ViewData["Title"] = "Take Quiz";
+    Layout = null; // No layout for immersive quiz experience
+}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@Model.QuizTitle - SchoolApp Quiz</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <style>
+        .timer-header { position: sticky; top: 0; z-index: 1000; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border-bottom: 2px solid var(--primary); }
+        .quiz-container { max-width: 800px; margin: 0 auto; padding-top: 2rem; }
+        .option-label { cursor: pointer; transition: all 0.3s; background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .option-label:hover { background: rgba(255, 255, 255, 0.1); }
+        input[type="radio"]:checked + .option-label { background: rgba(99, 102, 241, 0.2); border-color: var(--primary) !important; color: white; box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
+    </style>
+</head>
+<body>
+
+    <div class="timer-header py-3 shadow-lg mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 text-white fw-bold"><i class="fa-solid fa-clipboard-question text-primary me-2"></i> @Model.QuizTitle</h4>
+            <div class="text-danger fw-bold fs-4 d-flex align-items-center" style="text-shadow: 0 0 10px rgba(220, 53, 69, 0.5);">
+                <i class="fa-solid fa-clock me-2"></i>
+                <span id="timerDisplay">@Model.DurationMinutes:00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container quiz-container pb-5">
+        <form id="takeQuizForm">
+            <input type="hidden" id="QuizId" value="@Model.QuizId" />
+            
+            @for (int i = 0; i < Model.Questions.Count; i++)
+            {
+                var q = Model.Questions[i];
+                <div class="card glass-card mb-5 border-0 question-item" data-qid="@q.QuestionId">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="d-flex justify-content-between align-items-start mb-4">
+                            <h4 class="fw-bold mb-0 text-white" style="line-height: 1.5;">@(i + 1). @q.Text</h4>
+                            <span class="badge badge-custom fs-6 ms-3 flex-shrink-0">@q.Points pts</span>
+                        </div>
+                        <div class="options-list mt-4">
+                            @foreach (var o in q.Options)
+                            {
+                                <div class="form-check mb-3 ps-0">
+                                    <input type="radio" class="btn-check" name="q_@q.QuestionId" id="opt_@o.OptionId" value="@o.OptionId" autocomplete="off">
+                                    <label class="btn text-start w-100 option-label p-3 rounded-4 fs-5" for="opt_@o.OptionId">
+                                        @o.Text
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="text-center mt-5 mb-5">
+                <button type="submit" class="btn btn-premium btn-lg px-5 py-3 rounded-pill fw-bold fs-5 shadow-lg">
+                    <i class="fa-solid fa-paper-plane me-2"></i> Submit Quiz
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            // Timer Logic
+            let durationSeconds = @Model.DurationMinutes * 60;
+            let timerDisplay = $('#timerDisplay');
+            
+            let timerInterval = setInterval(function () {
+                durationSeconds--;
+                let m = Math.floor(durationSeconds / 60);
+                let s = durationSeconds % 60;
+                timerDisplay.text(`${m}:${s < 10 ? '0' : ''}${s}`);
+
+                if (durationSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    Swal.fire('Time is up!', 'Your quiz will be submitted automatically.', 'warning').then(() => {
+                        $('#takeQuizForm').submit();
+                    });
+                }
+            }, 1000);
+
+            // Form Submit Logic
+            $('#takeQuizForm').submit(function (e) {
+                e.preventDefault();
+                clearInterval(timerInterval);
+                
+                Swal.fire({
+                    title: 'Submitting...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                let submission = {
+                    QuizId: parseInt($('#QuizId').val()),
+                    Questions: []
+                };
+
+                $('.question-item').each(function () {
+                    let qId = $(this).data('qid');
+                    let selectedVal = $(this).find(`input[name='q_${qId}']:checked`).val();
+                    if (selectedVal) {
+                        submission.Questions.push({
+                            QuestionId: qId,
+                            SelectedOptionId: parseInt(selectedVal)
+                        });
+                    }
+                });
+
+                $.ajax({
+                    url: '/Quiz/Submit',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(submission),
+                    success: function (res) {
+                        if (res.success) {
+                            let percentage = (res.score / res.total) * 100;
+                            let icon = percentage >= 50 ? 'success' : 'error';
+                            let title = percentage >= 50 ? 'Great Job!' : 'Keep Trying!';
+                            
+                            Swal.fire({
+                                icon: icon,
+                                title: title,
+                                html: `You scored <b>${res.score}</b> out of <b>${res.total}</b>.<br/>Percentage: ${percentage.toFixed(1)}%`,
+                                confirmButtonText: 'Back to Dashboard',
+                                allowOutsideClick: false
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '/Quiz/Index';
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

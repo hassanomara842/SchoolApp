@@ -1,0 +1,61 @@
+@model SchoolApp.Models.Trainee
+
+@{
+    ViewData["Title"] = "Edit Trainee";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1 class="display-5 fw-bold mb-0">Edit Trainee</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="glass-card p-4">
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold"></label>
+                    <input asp-for="Name" class="form-control bg-transparent text-white border-secondary" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Image" class="form-label fw-bold">Image (Upload or URL)</label>
+                    <input type="file" name="imageFile" class="form-control bg-dark text-light border-secondary mb-2" accept="image/*" />
+                    <input asp-for="Image" class="form-control bg-transparent text-white border-secondary" placeholder="Or enter image URL here..." />
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Grade" class="form-label fw-bold"></label>
+                        <input asp-for="Grade" class="form-control bg-transparent text-white border-secondary" type="number" step="0.01" />
+                        <span asp-validation-for="Grade" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Address" class="form-label fw-bold"></label>
+                        <input asp-for="Address" class="form-control bg-transparent text-white border-secondary" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Dept_id" class="form-label fw-bold">Department</label>
+                    <select asp-for="Dept_id" class="form-select bg-dark text-white border-secondary" asp-items="ViewBag.Dept_id"></select>
+                    <span asp-validation-for="Dept_id" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-light px-4">Back to List</a>
+                    <button type="submit" class="btn btn-premium px-5"><i class="fa-solid fa-save"></i> Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

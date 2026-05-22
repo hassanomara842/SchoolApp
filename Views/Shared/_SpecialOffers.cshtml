@@ -1,0 +1,62 @@
+@using Microsoft.EntityFrameworkCore
+@inject SchoolApp.Models.AppDbContext _context
+
+@{
+    var offers = await _context.Courses
+        .Where(c => c.DiscountPrice != null)
+        .OrderByDescending(c => c.Id)
+        .Take(3)
+        .ToListAsync();
+}
+
+@if (offers.Any())
+{
+    <div class="container my-5 pb-4">
+        <h2 class="text-light fw-bold mb-4 d-flex align-items-center">
+            <i class="fa-solid fa-fire text-white me-2 fs-3"></i> 
+            <span style="font-family: 'Outfit', sans-serif; font-size: 2.2rem;">Special Offers</span>
+        </h2>
+        
+        <div class="row g-4">
+            @foreach (var offer in offers)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 rounded-4 overflow-hidden" style="background-color: #1a1d2d; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: transform 0.3s ease;">
+                        <div class="position-relative">
+                            <img src="@(string.IsNullOrEmpty(offer.ImageUrl) ? "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop" : offer.ImageUrl)" class="w-100" style="height: 200px; object-fit: cover;" alt="@offer.Name">
+                            @if (!string.IsNullOrEmpty(offer.BadgeText))
+                            {
+                                <span class="badge bg-@(offer.BadgeColor ?? "danger") position-absolute top-0 end-0 m-3 px-3 py-2 fw-bold" style="font-size: 0.9rem;">@offer.BadgeText</span>
+                            }
+                        </div>
+                        <div class="card-body text-center p-4 d-flex flex-column justify-content-between">
+                            <div>
+                                <h4 class="text-white fw-bold mb-2" style="font-family: 'Inter', sans-serif;">@offer.Name</h4>
+                                <p class="text-secondary small mb-4">@(string.IsNullOrEmpty(offer.Description) ? "Enroll now and start learning today." : offer.Description)</p>
+                                
+                                <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
+                                    <span class="text-secondary text-decoration-line-through fs-5">$@offer.Price.ToString("0.##")</span>
+                                    <span class="text-success fw-bold fs-3">$@offer.DiscountPrice?.ToString("0.##")</span>
+                                </div>
+                            </div>
+                            
+                            <a href="@Url.Action("Details", "Course", new { id = offer.Id })" class="btn btn-outline-light rounded-pill py-2 fw-bold" style="background: linear-gradient(90deg, #2c324c, #1f2336); border-color: #434c70; transition: all 0.3s;">
+                                @(offer.BadgeColor == "primary" ? Html.Raw("<span style='background: linear-gradient(90deg, #9b51e0, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;'>Enroll Now</span>") : "Enroll Now")
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<style>
+    .card:hover {
+        transform: translateY(-10px);
+    }
+    .card:hover a.btn-outline-light {
+        background: linear-gradient(90deg, #3b4266, #2d324d) !important;
+        border-color: #5c6796 !important;
+    }
+</style>

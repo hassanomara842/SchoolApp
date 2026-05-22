@@ -1,0 +1,88 @@
+@{
+    ViewData["Title"] = "Trainee Dashboard";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-info fw-bold mb-0"><i class="fa-solid fa-graduation-cap me-2"></i> Welcome back, @User.Identity?.Name!</h2>
+            <p class="text-muted">Here is an overview of your learning progress.</p>
+        </div>
+    </div>
+    
+    @await Html.PartialAsync("_AnnouncementsCarousel")
+    
+    @await Html.PartialAsync("_SpecialOffers")
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card glass-panel border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4 text-center">
+                    <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex p-3 mb-3">
+                        <i class="fa-solid fa-book-open fs-2 text-primary"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">@ViewBag.TotalCourses</h3>
+                    <p class="text-muted mb-0">Total Courses Available</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card glass-panel border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4 text-center">
+                    <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex p-3 mb-3">
+                        <i class="fa-solid fa-file-signature fs-2 text-warning"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">@ViewBag.PendingQuizzes</h3>
+                    <p class="text-muted mb-0">Quizzes to Take</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card glass-panel border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4 text-center">
+                    <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex p-3 mb-3">
+                        <i class="fa-solid fa-certificate fs-2 text-success"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">0</h3>
+                    <p class="text-muted mb-0">Certificates Earned</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card glass-panel border-0 rounded-4 shadow-sm h-100">
+                <div class="card-header bg-transparent border-0 p-4 pb-0">
+                    <h5 class="fw-bold"><i class="fa-solid fa-bullhorn me-2 text-warning"></i> Recent Announcements</h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (ViewBag.Announcements != null && ((List<Announcement>)ViewBag.Announcements).Any())
+                    {
+                        foreach (var item in ((List<Announcement>)ViewBag.Announcements).Take(3))
+                        {
+                            <div class="alert alert-info rounded-3 border-0">
+                                <strong>@item.Title</strong> @item.Description
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-muted text-center py-3">No recent announcements.</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card glass-panel border-0 rounded-4 shadow-sm h-100">
+                <div class="card-header bg-transparent border-0 p-4 pb-0">
+                    <h5 class="fw-bold"><i class="fa-solid fa-bolt me-2 text-danger"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body p-4">
+                    <a href="/Course" class="btn btn-primary w-100 mb-3 rounded-pill py-2"><i class="fa-solid fa-book-open me-2"></i> Browse Courses</a>
+                    <a href="/Quiz" class="btn btn-outline-info w-100 mb-3 rounded-pill py-2"><i class="fa-solid fa-clipboard-question me-2"></i> Take a Quiz</a>
+                    <a href="/Account/Profile" class="btn btn-outline-secondary w-100 rounded-pill py-2"><i class="fa-solid fa-user me-2"></i> My Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

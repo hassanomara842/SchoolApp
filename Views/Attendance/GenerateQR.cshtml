@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Smart Attendance QR";
+}
+
+<div class="container mt-5 mb-5 text-center">
+    <div class="card glass-panel border-0 rounded-4 shadow-lg p-5 mx-auto" style="max-width: 600px;">
+        <h2 class="text-primary fw-bold mb-3"><i class="fa-solid fa-qrcode me-2"></i> Scan to Attend</h2>
+        <h4 class="text-white mb-4">@ViewBag.CourseName</h4>
+        <p class="text-muted mb-4">Trainees, please scan this code with your phone camera to register your attendance for today (@ViewBag.Date).</p>
+        
+        <div class="bg-white p-4 rounded-4 d-inline-block shadow-sm mb-4">
+            <!-- QR Code container -->
+            <div id="qrcode"></div>
+        </div>
+
+        <div>
+            <a href="/Attendance/Take?courseId=@ViewBag.CourseId" class="btn btn-outline-light rounded-pill px-4">Back to Manual Attendance</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Generate the URL that the trainee will visit
+            const protocol = window.location.protocol;
+            const host = window.location.host;
+            const courseId = '@ViewBag.CourseId';
+            const date = '@ViewBag.Date';
+            const targetUrl = `${protocol}//${host}/Attendance/ScanQR?courseId=${courseId}&date=${date}`;
+
+            // Render QR code
+            new QRCode(document.getElementById("qrcode"), {
+                text: targetUrl,
+                width: 256,
+                height: 256,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        });
+    </script>
+}

@@ -1,0 +1,103 @@
+@model SchoolApp.Models.ProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- Profile Sidebar -->
+        <div class="col-lg-4 mb-4">
+            <div class="card glass-card border-0 shadow-lg text-center p-4 h-100">
+                <div class="card-body d-flex flex-column align-items-center">
+                    @if (!string.IsNullOrEmpty(Model.ProfilePicturePath))
+                    {
+                        <img src="@Model.ProfilePicturePath" 
+                             id="profileImagePreview"
+                             alt="Profile Avatar" 
+                             class="avatar-img rounded-circle mb-3 object-fit-cover" 
+                             style="width: 120px; height: 120px; border: 3px solid var(--primary); padding: 5px;" />
+                    }
+                    else
+                    {
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=@Model.Email&backgroundColor=6366f1" 
+                             id="profileImagePreview"
+                             alt="Profile Avatar" 
+                             class="avatar-img rounded-circle mb-3 object-fit-cover" 
+                             style="width: 120px; height: 120px; border: 3px solid var(--primary); padding: 5px;" />
+                    }
+                    <h3 class="fw-bold mb-1">@Model.FullName</h3>
+                    <p class="text-muted mb-4">@Model.Email</p>
+                    <span class="badge badge-custom px-3 py-2">Student / User</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Details & Password -->
+        <div class="col-lg-8">
+            @if (TempData["StatusMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fa-solid fa-circle-check me-2"></i> @TempData["StatusMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card glass-card border-0 shadow-lg mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4 border-bottom border-secondary pb-3">Personal Information</h4>
+                    
+                    <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="form-floating mb-3">
+                            <input asp-for="FullName" class="form-control" placeholder="Full Name" />
+                            <label asp-for="FullName">Full Name</label>
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ProfileImage" class="form-label text-light">Profile Picture</label>
+                            <input asp-for="ProfileImage" type="file" class="form-control text-light" style="background-color: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);" accept="image/*" />
+                            <span asp-validation-for="ProfileImage" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input asp-for="Email" class="form-control" disabled />
+                            <label asp-for="Email">Email Address (Cannot be changed)</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-premium px-4">
+                            <i class="fa-solid fa-floppy-disk me-2"></i> Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card glass-card border-0 shadow-lg">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4 border-bottom border-secondary pb-3">Change Password</h4>
+                    
+                    <form asp-action="ChangePassword" method="post">
+                        <partial name="_ChangePasswordPartial" model="new SchoolApp.Models.ChangePasswordViewModel()" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('ProfileImage').addEventListener('change', function(event) {
+            if (event.target.files && event.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImagePreview').src = e.target.result;
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        });
+    </script>
+}

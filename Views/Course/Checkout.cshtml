@@ -1,0 +1,69 @@
+@model SchoolApp.Models.Course
+@{
+    ViewData["Title"] = "Secure Checkout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card glass-panel border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white p-4 border-0 d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0"><i class="fa-solid fa-lock me-2"></i> Secure Checkout</h3>
+                    <div class="fs-3 fw-bold">$@Model.Price</div>
+                </div>
+                
+                <div class="card-body p-4 p-md-5 bg-white text-dark">
+                    <div class="mb-4">
+                        <h5 class="fw-bold">Order Summary</h5>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mt-3">
+                            <span>Course: <strong>@Model.Name</strong></span>
+                            <span>$@Model.Price</span>
+                        </div>
+                    </div>
+
+                    <form asp-action="CheckoutConfirm" method="post">
+                        <input type="hidden" name="courseId" value="@Model.Id" />
+                        
+                        <h5 class="fw-bold mb-3 mt-4">Payment Details</h5>
+                        <div class="alert alert-info py-2 small rounded-3 mb-4">
+                            <i class="fa-solid fa-circle-info me-2"></i> This is a simulated checkout. No real card is needed.
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold">Cardholder Name</label>
+                            <input type="text" class="form-control" placeholder="JOHN DOE" required value="@User.Identity?.Name" />
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold">Card Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-brands fa-cc-visa text-primary fs-5"></i></span>
+                                <input type="text" class="form-control" placeholder="4111 1111 1111 1111" required maxlength="19" value="4111 1111 1111 1111" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <label class="form-label text-muted small fw-bold">Expiry Date</label>
+                                <input type="text" class="form-control" placeholder="MM/YY" required value="12/25" />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-muted small fw-bold">CVV</label>
+                                <input type="text" class="form-control" placeholder="123" required maxlength="3" value="123" />
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-success btn-lg rounded-pill fw-bold">
+                                <i class="fa-solid fa-shield-check me-2"></i> Pay $@Model.Price & Enroll
+                            </button>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="text-decoration-none text-muted small">Cancel and return to course</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+@{
+    ViewData["Title"] = "Academic Calendar";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-info mb-2"><i class="fa-solid fa-calendar-days me-3"></i> Academic Calendar</h1>
+        <p class="text-muted fs-5">Track your upcoming courses and important events</p>
+    </div>
+
+    <div class="glass-card border-0 rounded-4 shadow-lg p-4 text-white">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: '/Home/GetCalendarEvents',
+                eventClick: function(info) {
+                    if (info.event.url) {
+                        window.location.href = info.event.url;
+                        info.jsEvent.preventDefault();
+                    }
+                }
+            });
+            calendar.render();
+        });
+    </script>
+}

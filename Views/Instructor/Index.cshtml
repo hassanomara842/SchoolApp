@@ -1,0 +1,57 @@
+@model IEnumerable<SchoolApp.Models.Instructor>
+
+@{
+    ViewData["Title"] = "Instructors";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1 class="display-5 fw-bold mb-0">Our Instructors</h1>
+    <div>
+        <a asp-action="Create" class="btn btn-premium me-3"><i class="fa-solid fa-plus me-2"></i>Add New</a>
+        <div class="badge-custom d-inline-block">
+            <i class="fa-solid fa-users"></i> @Model.Count() Instructors
+        </div>
+    </div>
+</div>
+
+<form asp-action="Index" method="get" class="mb-5">
+    <div class="input-group input-group-lg shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2);">
+        <span class="input-group-text bg-transparent border-0 text-white ps-4">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </span>
+        <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Search instructors by name..." style="backdrop-filter: blur(10px);">
+        <button class="btn btn-premium px-4 border-0" type="submit" style="border-radius: 0;">Search</button>
+        @if(ViewData["CurrentFilter"] != null && !string.IsNullOrEmpty(ViewData["CurrentFilter"].ToString()))
+        {
+            <a asp-action="Index" class="btn btn-outline-light d-flex align-items-center border-0 px-4" style="background: rgba(255,255,255,0.1);"><i class="fa-solid fa-xmark me-2"></i>Clear</a>
+        }
+    </div>
+</form>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    @foreach (var item in Model) {
+        <div class="col">
+            <div class="card glass-card h-100 text-center p-4 border-0 position-relative">
+                <a asp-action="Edit" asp-route-id="@item.Id" class="position-absolute top-0 end-0 m-3 text-muted border-0 bg-transparent p-0" title="Edit" style="transition: color 0.3s; z-index: 2;">
+                    <i class="fa-solid fa-pen-to-square fs-5 text-light"></i>
+                </a>
+                <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="position-absolute top-0 start-0 m-3" style="z-index: 2;">
+                    <button type="button" class="btn btn-link text-danger p-0 border-0 bg-transparent" onclick="confirmDelete(this.form)" title="Delete">
+                        <i class="fa-solid fa-trash fs-5"></i>
+                    </button>
+                </form>
+                <div class="mb-3 mt-2">
+                    <img src="@(string.IsNullOrEmpty(item.Image) ? $"https://ui-avatars.com/api/?name={item.Name}&background=random&color=fff&size=100" : item.Image)" class="avatar-img rounded-circle mb-3 object-fit-cover" alt="@item.Name" style="width: 100px; height: 100px; border-width: 3px;" />
+                    <h4 class="card-title fw-bold">@item.Name</h4>
+                    <p class="text-muted small mb-1"><i class="fa-solid fa-building text-primary"></i> @item.Department?.Name</p>
+                    <p class="text-muted small mb-0"><i class="fa-solid fa-book text-secondary"></i> @item.Course?.Name</p>
+                </div>
+                <div class="card-footer bg-transparent border-0 mt-auto pt-3">
+                    <a asp-action="Detail" asp-route-id="@item.Id" class="btn btn-premium w-100">
+                        View Profile <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

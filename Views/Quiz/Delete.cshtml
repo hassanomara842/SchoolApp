@@ -1,0 +1,36 @@
+@model SchoolApp.Models.Quiz
+
+@{
+    ViewData["Title"] = "Delete Quiz";
+}
+
+<div class="container mt-4">
+    <div class="mb-4">
+        <h2 class="text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i> Delete Quiz</h2>
+        <h4 class="text-light opacity-75">Are you sure you want to delete this quiz?</h4>
+    </div>
+    
+    <div class="card glass-card mt-3 border-0 border-top border-danger border-3">
+        <div class="card-body p-4">
+            <h3 class="text-primary mb-4">@Model.Title</h3>
+            
+            <dl class="row text-light">
+                <dt class="col-sm-3 opacity-75"><i class="fa-solid fa-book-open me-2"></i> Course</dt>
+                <dd class="col-sm-9 fw-bold">@Model.Course?.Name</dd>
+                
+                <dt class="col-sm-3 opacity-75"><i class="fa-solid fa-stopwatch me-2"></i> Duration</dt>
+                <dd class="col-sm-9 fw-bold">@Model.DurationMinutes Minutes</dd>
+            </dl>
+            
+            <div class="mt-5">
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 me-2">
+                        <i class="fa-solid fa-trash me-1"></i> Confirm Delete
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

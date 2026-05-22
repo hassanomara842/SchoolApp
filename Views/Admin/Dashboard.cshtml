@@ -1,0 +1,219 @@
+@model SchoolApp.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1 class="display-5 fw-bold mb-0">
+        <i class="fa-solid fa-chart-pie text-primary me-2"></i> Admin Dashboard
+    </h1>
+    <span class="text-muted"><i class="fa-regular fa-clock me-1"></i> Live Statistics</span>
+</div>
+
+@await Html.PartialAsync("_AnnouncementsCarousel")
+
+<!-- Stat Cards -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+    <div class="col">
+        <div class="card glass-card h-100 p-4 border-0 position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(30, 41, 59, 0.8)); transition: transform 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div class="position-absolute top-0 end-0 m-3 opacity-25">
+                <i class="fa-solid fa-users fa-4x text-primary"></i>
+            </div>
+            <div class="position-relative z-1">
+                <h6 class="text-uppercase text-muted fw-bold mb-2" style="letter-spacing: 1px;">Total Trainees</h6>
+                <h2 class="display-4 fw-bold text-white mb-0">@Model.TotalStudents</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col">
+        <div class="card glass-card h-100 p-4 border-0 position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(30, 41, 59, 0.8)); transition: transform 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div class="position-absolute top-0 end-0 m-3 opacity-25">
+                <i class="fa-solid fa-chalkboard-user fa-4x text-secondary"></i>
+            </div>
+            <div class="position-relative z-1">
+                <h6 class="text-uppercase text-muted fw-bold mb-2" style="letter-spacing: 1px;">Instructors</h6>
+                <h2 class="display-4 fw-bold text-white mb-0">@Model.TotalInstructors</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col">
+        <div class="card glass-card h-100 p-4 border-0 position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(30, 41, 59, 0.8)); transition: transform 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div class="position-absolute top-0 end-0 m-3 opacity-25">
+                <i class="fa-solid fa-book-open fa-4x text-success"></i>
+            </div>
+            <div class="position-relative z-1">
+                <h6 class="text-uppercase text-muted fw-bold mb-2" style="letter-spacing: 1px;">Active Courses</h6>
+                <h2 class="display-4 fw-bold text-white mb-0">@Model.TotalCourses</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col">
+        <div class="card glass-card h-100 p-4 border-0 position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(30, 41, 59, 0.8)); transition: transform 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div class="position-absolute top-0 end-0 m-3 opacity-25">
+                <i class="fa-solid fa-building fa-4x text-warning"></i>
+            </div>
+            <div class="position-relative z-1">
+                <h6 class="text-uppercase text-muted fw-bold mb-2" style="letter-spacing: 1px;">Departments</h6>
+                <h2 class="display-4 fw-bold text-white mb-0">@Model.TotalDepartments</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Section -->
+<div class="row">
+    <div class="col-lg-6 mb-4 mb-lg-0">
+        <div class="card glass-card p-4 border-0 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">Students per Department</h5>
+                <a href="/Admin/ExportTraineesToExcel" class="btn btn-sm btn-outline-light"><i class="fa-solid fa-download me-1"></i> Export Data</a>
+            </div>
+            <div style="height: 300px;">
+                <canvas id="deptChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card glass-card p-4 border-0 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">Course Enrollments</h5>
+            </div>
+            <div style="height: 300px;">
+                <canvas id="courseChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card glass-card p-4 border-0 h-100" style="background: linear-gradient(180deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,0.9) 100%);">
+            <h5 class="fw-bold mb-4">Quick Actions</h5>
+            <div class="d-grid gap-3">
+                <a asp-controller="Instructor" asp-action="Create" class="btn btn-outline-premium text-start py-3"><i class="fa-solid fa-user-plus me-3"></i> Add New Instructor</a>
+                <a asp-controller="Course" asp-action="Create" class="btn btn-outline-premium text-start py-3"><i class="fa-solid fa-file-circle-plus me-3"></i> Create Course</a>
+                <a asp-controller="Department" asp-action="Create" class="btn btn-outline-premium text-start py-3"><i class="fa-solid fa-folder-plus me-3"></i> New Department</a>
+                <a asp-controller="Trainee" asp-action="Index" class="btn btn-premium text-start py-3"><i class="fa-solid fa-users-gear me-3"></i> Manage Trainees</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('deptChart').getContext('2d');
+            const deptData = @Html.Raw(Json.Serialize(Model.DepartmentStats));
+            
+            const labels = deptData.map(d => d.departmentName);
+            const data = deptData.map(d => d.studentCount);
+
+            // Create gradient
+            let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(99, 102, 241, 0.8)');   // --primary
+            gradient.addColorStop(1, 'rgba(236, 72, 153, 0.2)');   // --secondary
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Enrolled Students',
+                        data: data,
+                        backgroundColor: gradient,
+                        borderColor: 'rgba(99, 102, 241, 1)',
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: {
+                                    family: "'Outfit', sans-serif"
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: {
+                                    family: "'Outfit', sans-serif"
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#a5b4fc',
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: false
+                        }
+                    }
+                }
+            });
+
+            // Course Enrollments Chart
+            const ctxCourse = document.getElementById('courseChart').getContext('2d');
+            const courseData = @Html.Raw(Json.Serialize(Model.CourseStats));
+            
+            const courseLabels = courseData.map(c => c.courseName);
+            const courseValues = courseData.map(c => c.enrollmentCount);
+
+            new Chart(ctxCourse, {
+                type: 'doughnut',
+                data: {
+                    labels: courseLabels,
+                    datasets: [{
+                        data: courseValues,
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(236, 72, 153, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#94a3b8',
+                                font: {
+                                    family: "'Outfit', sans-serif"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

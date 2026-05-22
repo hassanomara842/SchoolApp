@@ -1,0 +1,76 @@
+@model IEnumerable<SchoolApp.Models.Quiz>
+@{
+    ViewData["Title"] = "Quizzes";
+    var isTrainee = ViewBag.IsTrainee as bool? ?? false;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-clipboard-question text-primary me-2"></i> @Localizer["Quizzes"]</h2>
+        @if (!isTrainee)
+        {
+            <a asp-action="Create" class="btn btn-primary"><i class="fa-solid fa-plus me-1"></i> @Localizer["Create New Quiz"]</a>
+        }
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card glass-card h-100 border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary fw-bold">@item.Title</h5>
+                        <h6 class="card-subtitle mb-3 text-light opacity-75">@item.Course?.Name</h6>
+                        <p class="card-text mb-1"><i class="fa-solid fa-stopwatch me-1 text-info"></i> @item.DurationMinutes Minutes</p>
+                        <p class="card-text"><small class="text-light opacity-50">Added: @item.CreatedAt.ToString("MMM dd, yyyy")</small></p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 text-center pb-3">
+                        @if (isTrainee)
+                        {
+                            var attempts = ViewBag.Attempts as IEnumerable<SchoolApp.Models.QuizAttempt>;
+                            var bestAttempt = attempts?.Where(a => a.QuizId == item.Id).OrderByDescending(a => (double)a.Score / a.TotalScore).FirstOrDefault();
+                            
+                            if (bestAttempt != null)
+                            {
+                                double percentage = ((double)bestAttempt.Score / bestAttempt.TotalScore) * 100;
+                                if (percentage >= 50)
+                                {
+                                    <div class="text-success fw-bold mb-2"><i class="fa-solid fa-check-circle me-1"></i> Passed (@percentage.ToString("0.0")%)</div>
+                                    <a asp-controller="Certificate" asp-action="Generate" asp-route-courseId="@item.CourseId" class="btn btn-warning w-100 rounded-pill fw-bold" target="_blank">
+                                        <i class="fa-solid fa-award me-1"></i> @Localizer["Get Certificate"]
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="text-danger fw-bold mb-2"><i class="fa-solid fa-xmark-circle me-1"></i> Failed (@percentage.ToString("0.0")%)</div>
+                                    <a asp-action="Take" asp-route-id="@item.Id" class="btn btn-outline-primary w-100 rounded-pill fw-bold">
+                                        <i class="fa-solid fa-rotate-right me-1"></i> @Localizer["Retake Quiz"]
+                                    </a>
+                                }
+                            }
+                            else
+                            {
+                                <a asp-action="Take" asp-route-id="@item.Id" class="btn btn-success w-100 rounded-pill fw-bold">
+                                    <i class="fa-solid fa-pen-nib me-1"></i> @Localizer["Take Quiz"]
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info rounded-pill px-4">@Localizer["View"]</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger rounded-pill px-4 ms-2">@Localizer["Delete"]</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        
+        @if(!Model.Any())
+        {
+            <div class="col-12 text-center text-muted my-5">
+                <i class="fa-solid fa-box-open fs-1 mb-3"></i>
+                <p>@Localizer["No quizzes available right now."]</p>
+            </div>
+        }
+    </div>
+</div>

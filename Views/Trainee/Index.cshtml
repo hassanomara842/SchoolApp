@@ -1,0 +1,43 @@
+@model IEnumerable<SchoolApp.Models.Trainee>
+
+@{
+    ViewData["Title"] = "Trainees";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <h1 class="display-5 fw-bold mb-0">Trainees</h1>
+    <a asp-action="Create" class="btn btn-premium"><i class="fa-solid fa-plus me-2"></i>Add Trainee</a>
+</div>
+
+<div class="glass-card p-4">
+    <table class="table text-white border-secondary mb-0 table-datatable">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Name)</th>
+                <th>@Html.DisplayNameFor(model => model.Grade)</th>
+                <th>@Html.DisplayNameFor(model => model.Address)</th>
+                <th>Department</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model) {
+                <tr>
+                    <td class="align-middle fw-bold">
+                        <img src="@(string.IsNullOrEmpty(item.Image) ? $"https://ui-avatars.com/api/?name={item.Name}&background=random&color=fff&size=40" : item.Image)" class="rounded-circle me-2 object-fit-cover" style="width: 40px; height: 40px;" alt="@item.Name" />
+                        @item.Name
+                    </td>
+                    <td class="align-middle text-info fw-bold">@item.Grade</td>
+                    <td class="align-middle">@item.Address</td>
+                    <td class="align-middle">@item.Department?.Name</td>
+                    <td class="text-end">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-light me-1"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline">
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(this.form)"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

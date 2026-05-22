@@ -1,0 +1,83 @@
+@model IEnumerable<SchoolApp.Models.LeaderboardViewModel>
+@{
+    ViewData["Title"] = "Academy Leaderboard";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-warning mb-2"><i class="fa-solid fa-trophy me-3"></i> Hall of Fame</h1>
+        <p class="text-muted fs-5">Top performing trainees in the academy based on their overall XP</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Top 3 Podium (Optional advanced UI, but let's stick to a beautiful list for now with distinct styling for top 3) -->
+            
+            <div class="glass-card border-0 rounded-4 shadow-lg overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-borderless align-middle mb-0 text-white" style="background: transparent;">
+                            <thead class="bg-dark bg-opacity-50">
+                                <tr>
+                                    <th class="py-3 px-4 text-center" style="width: 10%;">Rank</th>
+                                    <th class="py-3 px-4">Trainee</th>
+                                    <th class="py-3 px-4">Department</th>
+                                    <th class="py-3 px-4 text-end">Total XP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var trainee in Model)
+                                {
+                                    string rowStyle = "";
+                                    string rankIcon = $"<span class='fw-bold fs-5'>{trainee.Rank}</span>";
+                                    
+                                    if (trainee.Rank == 1)
+                                    {
+                                        rowStyle = "background: rgba(255, 215, 0, 0.15); border-left: 4px solid #ffd700;";
+                                        rankIcon = "<i class='fa-solid fa-medal fs-2' style='color: #ffd700;'></i>";
+                                    }
+                                    else if (trainee.Rank == 2)
+                                    {
+                                        rowStyle = "background: rgba(192, 192, 192, 0.15); border-left: 4px solid #c0c0c0;";
+                                        rankIcon = "<i class='fa-solid fa-medal fs-2' style='color: #c0c0c0;'></i>";
+                                    }
+                                    else if (trainee.Rank == 3)
+                                    {
+                                        rowStyle = "background: rgba(205, 127, 50, 0.15); border-left: 4px solid #cd7f32;";
+                                        rankIcon = "<i class='fa-solid fa-medal fs-2' style='color: #cd7f32;'></i>";
+                                    }
+
+                                    <tr style="@rowStyle">
+                                        <td class="text-center py-3 px-4">
+                                            @Html.Raw(rankIcon)
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div class="d-flex align-items-center gap-3">
+                                                @{
+                                                    var picUrl = string.IsNullOrEmpty(trainee.ProfilePicture) ? $"https://api.dicebear.com/7.x/avataaars/svg?seed={trainee.Name}&backgroundColor=6366f1" : trainee.ProfilePicture;
+                                                }
+                                                <img src="@picUrl" class="rounded-circle object-fit-cover shadow-sm" width="50" height="50" alt="@trainee.Name" onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=@trainee.Name&backgroundColor=6366f1'" />
+                                                <div>
+                                                    <h5 class="mb-0 fw-bold">@trainee.Name</h5>
+                                                    @if (trainee.Rank == 1)
+                                                    {
+                                                        <span class="badge bg-warning text-dark"><i class="fa-solid fa-crown me-1"></i> Champion</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 text-muted">@trainee.DepartmentName</td>
+                                        <td class="py-3 px-4 text-end">
+                                            <span class="fs-4 fw-bold text-info">@trainee.TotalXP</span>
+                                            <span class="text-muted small ms-1">XP</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+@model SchoolApp.Models.Instructor
+
+@{
+    ViewData["Title"] = "Instructor Details";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="glass-card overflow-hidden">
+                <!-- Profile Header -->
+                <div class="p-5 text-center" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.2)); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <img src="@(string.IsNullOrEmpty(Model.Image) ? $"https://ui-avatars.com/api/?name={Model.Name}&background=random&color=fff&size=120" : Model.Image)" class="avatar-img rounded-circle mb-3 shadow object-fit-cover" alt="@Model.Name" style="width: 120px; height: 120px; border-width: 4px;" />
+                    <h2 class="fw-bold mb-1">@Model.Name</h2>
+                    <p class="text-info mb-0"><i class="fa-solid fa-location-dot me-2"></i>@Model.Address</p>
+                </div>
+                
+                <!-- Profile Body -->
+                <div class="p-5">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                                <p class="text-muted small mb-1 text-uppercase tracking-wider">Department</p>
+                                <h5 class="mb-0 d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-building text-primary"></i> @Model.Department?.Name
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                                <p class="text-muted small mb-1 text-uppercase tracking-wider">Course</p>
+                                <h5 class="mb-0 d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-book text-secondary"></i> @Model.Course?.Name
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                                <p class="text-muted small mb-1 text-uppercase tracking-wider">Salary</p>
+                                <h5 class="mb-0 d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-sack-dollar text-success"></i> @Model.Salary.ToString("C")
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                                <p class="text-muted small mb-1 text-uppercase tracking-wider">ID Number</p>
+                                <h5 class="mb-0 d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-id-badge text-warning"></i> #@Model.Id
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-5 text-center">
+                        <a asp-action="Index" class="btn btn-outline-premium px-4">
+                            <i class="fa-solid fa-arrow-left me-2"></i> Back to Instructors
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

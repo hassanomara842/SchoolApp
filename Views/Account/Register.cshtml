@@ -1,0 +1,73 @@
+@model SchoolApp.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card glass-card p-4 border-0 shadow-lg">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold">Create an Account</h2>
+                        <p class="text-muted">Join us to start learning today</p>
+                    </div>
+
+                    <form asp-action="Register">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="FullName" class="form-control" placeholder="John Doe" />
+                            <label asp-for="FullName">Full Name</label>
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                            <label asp-for="Email">Email address</label>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="Password" class="form-control" placeholder="Password" />
+                            <label asp-for="Password">Password</label>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password" />
+                            <label asp-for="ConfirmPassword">Confirm Password</label>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-premium w-100 py-2 mb-3">
+                            <i class="fa-solid fa-user-plus me-2"></i> Register
+                        </button>
+                    </form>
+
+                    <div class="d-flex align-items-center my-3">
+                        <hr class="flex-grow-1 border-secondary" />
+                        <span class="mx-2 text-muted small">OR</span>
+                        <hr class="flex-grow-1 border-secondary" />
+                    </div>
+
+                    <form asp-action="ExternalLogin" asp-controller="Account" method="post">
+                        <button type="submit" name="provider" value="Google" class="btn btn-outline-light w-100 py-2 d-flex align-items-center justify-content-center" style="background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" class="me-2" style="width: 18px; height: 18px;" />
+                            Sign up with Google
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <p class="small text-muted mb-0">Already have an account? <a asp-action="Login" class="text-primary text-decoration-none fw-bold">Sign In here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

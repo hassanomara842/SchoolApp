@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Instructor Dashboard";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-info fw-bold mb-0"><i class="fa-solid fa-chalkboard-user me-2"></i> Welcome back, Instructor @User.Identity?.Name!</h2>
+            <p class="text-muted">Here is an overview of your teaching activities.</p>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_AnnouncementsCarousel")
+    
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card glass-panel border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4 text-center">
+                    <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex p-3 mb-3">
+                        <i class="fa-solid fa-book fs-2 text-primary"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">@ViewBag.TotalCourses</h3>
+                    <p class="text-muted mb-0">Total Courses</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card glass-panel border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4 text-center">
+                    <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex p-3 mb-3">
+                        <i class="fa-solid fa-users fs-2 text-info"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">@ViewBag.TotalTrainees</h3>
+                    <p class="text-muted mb-0">Total Trainees in Academy</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card glass-panel border-0 rounded-4 shadow-sm h-100">
+                <div class="card-body p-4 text-center">
+                    <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex p-3 mb-3">
+                        <i class="fa-solid fa-wand-magic-sparkles fs-2 text-warning"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">AI</h3>
+                    <p class="text-muted mb-0">Quiz Generator Ready</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card glass-panel border-0 rounded-4 shadow-sm h-100">
+                <div class="card-header bg-transparent border-0 p-4 pb-0">
+                    <h5 class="fw-bold"><i class="fa-solid fa-bolt me-2 text-danger"></i> Instructor Actions</h5>
+                </div>
+                <div class="card-body p-4">
+                    <a href="/Attendance/Take?courseId=1" class="btn btn-primary w-100 mb-3 rounded-pill py-2"><i class="fa-solid fa-calendar-check me-2"></i> Take Attendance</a>
+                    <a href="/Quiz/Create" class="btn btn-warning w-100 mb-3 rounded-pill py-2"><i class="fa-solid fa-robot me-2"></i> Generate AI Quiz</a>
+                    <a href="/Course" class="btn btn-outline-info w-100 rounded-pill py-2"><i class="fa-solid fa-book-open me-2"></i> Manage Courses</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

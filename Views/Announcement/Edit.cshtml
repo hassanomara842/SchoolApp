@@ -1,0 +1,66 @@
+@model SchoolApp.Models.Announcement
+@{
+    ViewData["Title"] = "Edit Announcement";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-card p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-info"><i class="fa-solid fa-pen-to-square me-2"></i> Edit Announcement</h2>
+                    <p class="text-muted">Update the details of your offer or news item.</p>
+                </div>
+
+                <form asp-action="Edit" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreatedAt" />
+
+                    <div class="form-floating mb-4">
+                        <input asp-for="Title" class="form-control" placeholder="Enter title" required />
+                        <label asp-for="Title">Title / Headline</label>
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <textarea asp-for="Description" class="form-control" placeholder="Description" style="height: 120px" required></textarea>
+                        <label asp-for="Description">Description Details</label>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input asp-for="ImageUrl" class="form-control" placeholder="Image URL" />
+                        <label asp-for="ImageUrl">Image URL</label>
+                        <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="imageFile" class="form-label text-muted ms-1"><i class="fa-regular fa-image me-1"></i> Upload New Image from Gallery (Overrides URL)</label>
+                        <input type="file" name="imageFile" id="imageFile" class="form-control bg-dark text-light border-secondary" accept="image/*" />
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-4 text-center">
+                            <img src="@Model.ImageUrl" class="rounded shadow-sm" style="max-height: 150px; object-fit: cover;" alt="Preview" />
+                        </div>
+                    }
+
+                    <div class="form-check form-switch mb-4 fs-5">
+                        <input class="form-check-input" type="checkbox" asp-for="IsActive">
+                        <label class="form-check-label text-muted" asp-for="IsActive">Publish immediately (Active)</label>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 mt-4">
+                        <a asp-action="Index" class="btn btn-outline-premium px-4">Cancel</a>
+                        <button type="submit" class="btn btn-premium px-5"><i class="fa-solid fa-save me-2"></i> Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
